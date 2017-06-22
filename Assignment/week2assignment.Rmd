@@ -1,0 +1,56 @@
+---
+title: "South American Airport Altitudes"
+output: html_document
+date: 12th June 2017
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+_Data from OpenFlights.org. _
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(leaflet)
+```
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, warning}
+airports <- read.csv("../Data/Airports.csv")
+names(airports)[7] <- "lat"
+names(airports)[8] <- "lng"
+
+sthamerica <- filter(airports, lat < 25, lat > -60, lng > -108, lng < -33, 
+                     Country != "Mexico")
+mexico <- filter(airports, Country == "Mexico")
+sthamerica <- rbind(sthamerica, mexico)
+sthamerica <- filter(sthamerica, Country!="United States",  
+                     Country!="Cambodia",  
+                     Country!="Guyana",  
+                     Country!="French Guiana",
+                     Country!="Spain", 
+                     Country!="France"
+                     )
+sthamerica$Country <- factor(sthamerica$Country)
+
+popuplist <- paste("<p> ", sthamerica$Name, "<br> ", 
+                         sthamerica$City , "<br> " ,
+                         sthamerica$Country , "<br> " , 
+                         paste("Altitude: ", sthamerica$Altitude, " ft", sep="") , "</p>")
+pal <- colorNumeric(
+palette = "YlGnBu",
+domain = sthamerica$Altitude
+)
+
+sthamerica %>% 
+    leaflet() %>% 
+    addTiles() %>% 
+    addCircleMarkers(weight=1, radius = 10, color = ~pal(Altitude), fillOpacity=1, 
+                     popup = popuplist) %>%
+    addLegend("topright", pal = pal, values = ~Altitude,
+    title = "Altitude",
+    labFormat = labelFormat(suffix = " ft"),
+    opacity = 1)
+
+```

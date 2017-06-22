@@ -1,0 +1,44 @@
+---
+title: "Week 3 Assignment"
+date: "14th June 2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Seatbelts
+
+
+```{r,   message=FALSE, echo=FALSE, warning=FALSE}
+library(plotly)
+data("Seatbelts")
+sb <- as.data.frame(Seatbelts)
+sb$law<- as.factor(sb$law+1)
+levels(sb$law)[1] <- "No Seatbelt Law"
+levels(sb$law)[2] <- "Compulsory Seatbelts"
+
+a <- list(
+    x = sb$kms, 
+    y = sb$DriversKilled,
+    text= paste(sb$kms, " kms driven\n", sb$DriversKilled, " drivers killed.\nLaw: ", sb$law)
+    )
+
+plot_ly(sb, x=~kms, y=~DriversKilled, color = ~law, colors="Set1", mode='markers',
+        hoverinfo='text', text=paste(sb$kms, " kms driven\n", 
+                                     sb$DriversKilled, " drivers killed.\nLaw: ", sb$law)
+        ) %>%
+    layout(title = 'Monthly Driver Deaths Before and After Seatbelt Law Introduced',
+         xaxis = list(title = 'Distance Driven (kms)'),
+         yaxis = list(title = 'Number of Driver Deaths'),
+                      legend = list(x = 1.1, y =0.5, title='Seatbelt Law')
+                          
+    )
+
+
+```
+
+## The End
+
+Thank you for reviewing my slides.
